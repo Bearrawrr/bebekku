@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Movie Date w Bebekku</title>
+  <style>
+    :root{
+      --bg1:#ffe8f3;
+      --bg2:#fff7d7;
+      --card:rgba(255,255,255,.8);
+      --text:#5a3b5c;
+      --pink:#ff6fae;
+      --shadow:0 20px 60px rgba(120,77,128,.18);
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top, rgba(255,255,255,.95), transparent 34%),
+        linear-gradient(135deg,var(--bg1),var(--bg2));
+      overflow:hidden;
+    }
+
+    .card{
+      width:min(1020px,94vw);
+      padding:28px 22px 24px;
+      border-radius:32px;
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.82);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+      position:relative;
+      text-align:center;
+    }
+
+    .sparkles{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      border-radius:32px;
+    }
+
+    .sparkle{
+      position:absolute;
+      bottom:-16px;
+      font-size:18px;
+      animation: floatUp linear forwards;
+      opacity:.85;
+    }
+
+    @keyframes floatUp{
+      from{transform:translateY(0) scale(1); opacity:.9}
+      to{transform:translateY(-110vh) scale(1.2); opacity:0}
+    }
+
+    h1{
+      margin:4px 0 14px;
+      font-size:clamp(2rem,4vw,3.5rem);
+      line-height:1.04;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns:1.08fr .92fr;
+      gap:18px;
+      align-items:center;
+      margin-top:10px;
+    }
+
+    .movie-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,247,235,.95));
+      border-radius:28px;
+      padding:16px;
+      border:1px solid rgba(255,255,255,.96);
+      box-shadow:0 10px 30px rgba(0,0,0,.05);
+    }
+
+    .poster{
+      width:100%;
+      max-width:380px;
+      margin:0 auto;
+      border-radius:22px;
+      overflow:hidden;
+      box-shadow:0 16px 28px rgba(0,0,0,.12);
+      border:4px solid rgba(255,255,255,.82);
+      background:#f8d6ea;
+    }
+
+    .poster img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+
+    .controls{
+      display:grid;
+      gap:14px;
+      align-content:center;
+    }
+
+    .pair{
+      display:flex;
+      justify-content:center;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .choice{
+      width:min(320px, 40vw);
+      min-width:240px;
+      min-height:224px;
+      border-radius:26px;
+      padding:14px;
+      background:rgba(255,255,255,.62);
+      border:1px solid rgba(255,255,255,.78);
+      box-shadow:0 10px 26px rgba(0,0,0,.05);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .label{
+      margin:0 0 10px;
+      font-weight:800;
+      opacity:.75;
+    }
+
+    button{
+      border:0;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color:transparent;
+      transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+      transform:scale(var(--scale,1));
+      will-change:transform;
+      font-weight:900;
+      font-size:1.15rem;
+    }
+
+    button:active{
+      transform:scale(calc(var(--scale,1) * .97));
+    }
+
+    #yesBtn{
+      background:linear-gradient(135deg, #ff77b5, #ffb25a);
+      color:white;
+      padding:16px 30px;
+      border-radius:18px;
+      box-shadow:0 12px 24px rgba(255,117,170,.35);
+    }
+
+    #noBtn{
+      background:linear-gradient(135deg, #f5f7fb, #e7ebf5);
+      color:#546172;
+      padding:16px 30px;
+      border-radius:18px;
+      box-shadow:0 12px 24px rgba(0,0,0,.08);
+      position:relative;
+    }
+
+    .msg{
+      margin-top:12px;
+      min-height:48px;
+      display:grid;
+      place-items:center;
+    }
+
+    .msg p{
+      margin:0;
+      padding:10px 12px;
+      width:100%;
+      border-radius:14px;
+      background:rgba(255,255,255,.84);
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 6px 16px rgba(0,0,0,.04);
+      animation:pop .16s ease-out;
+      font-size:1rem;
+      line-height:1.35;
+    }
+
+    @keyframes pop{
+      from{transform:translateY(8px); opacity:0}
+      to{transform:translateY(0); opacity:1}
+    }
+
+    .status{
+      min-height:1.6em;
+      font-size:1.05rem;
+      font-weight:800;
+      color:#d94c81;
+      margin-top:2px;
+    }
+
+    .final{
+      margin-top:8px;
+      min-height:220px;
+      display:grid;
+      place-items:center;
+      gap:10px;
+    }
+
+    .final .line1{
+      font-size:clamp(1.4rem, 2vw, 2rem);
+      font-weight:900;
+      color:#d94480;
+    }
+
+    .final .line2{
+      font-size:1.05rem;
+      font-weight:700;
+      opacity:.92;
+    }
+
+    .cute-row{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .cute-bubble{
+      width:120px;
+      height:120px;
+      border-radius:30px;
+      display:grid;
+      place-items:center;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,244,248,.95));
+      border:1px solid rgba(255,255,255,.92);
+      box-shadow:0 10px 22px rgba(0,0,0,.06);
+      font-size:64px;
+    }
+
+    .hidden{display:none !important;}
+
+    @media (max-width: 820px){
+      .hero{grid-template-columns:1fr}
+      .choice{width:min(420px, 92vw)}
+      .movie-card{max-width:540px; margin:0 auto}
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" src="cute-song.mp3" loop preload="auto"></audio>
+
+  <div class="card">
+    <div class="sparkles" aria-hidden="true"></div>
+
+    <h1>Will you watch <span style="color:#ff5f9f">Elemental</span> with me? 💖</h1>
+
+    <div class="hero" id="mainView">
+      <div class="movie-card">
+        <div class="poster">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/en/thumb/4/4d/Elemental_final_poster.jpg/250px-Elemental_final_poster.jpg"
+            alt="Elemental theatrical release poster"
+          />
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="pair">
+          <div class="choice" id="yesChoice">
+            <div class="label">Yes button ✨</div>
+            <button id="yesBtn" style="--scale:1">Yes 💕</button>
+            <div class="msg" id="yesMsg"></div>
+          </div>
+
+          <div class="choice" id="noChoice">
+            <div class="label">No button 🙈</div>
+            <button id="noBtn" style="--scale:1">No 😅</button>
+            <div class="msg" id="noMsg"></div>
+          </div>
+        </div>
+
+        <div class="status" id="statusText"></div>
+      </div>
+    </div>
+
+    <div class="final hidden" id="finalView">
+      <div class="line1">YEAHHHHH 🥳💖</div>
+      <div class="line2">You are so cute for saying yes, sayang. I really wanna watch it with you.</div>
+      <div class="cute-row">
+        <div class="cute-bubble" aria-label="cute bear">🐻</div>
+        <div class="cute-bubble" aria-label="cute duck">🦆</div>
+      </div>
+      <div class="line2">Thank youuuuu, pookie 🫶</div>
+    </div>
+  </div>
+
+  <script>
+    const bgMusic = document.getElementById("bgMusic");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const yesMsg = document.getElementById("yesMsg");
+    const noMsg = document.getElementById("noMsg");
+    const statusText = document.getElementById("statusText");
+    const noChoice = document.getElementById("noChoice");
+    const mainView = document.getElementById("mainView");
+    const finalView = document.getElementById("finalView");
+    const sparkles = document.querySelector(".sparkles");
+
+    let yesScale = 1;
+    let noScale = 1;
+    let evasive = false;
+    let finalMode = false;
+
+    const yesTexts = [
+      "Now press No if you dare 😌",
+      "Go on, try No if you’re brave 👀",
+      "That Yes is looking very confident 😏",
+      "Aww, still choosing Yes? So cute 💘"
+    ];
+
+    const noTexts = [
+      "please pookie 🥺",
+      "pretty pleaseee ✨",
+      "I really wanna watch it with you sayang 💖",
+      "one tiny yes would make me super happy 😭",
+      "come onnn, be my movie date 🫶"
+    ];
+
+    function tryPlayMusic() {
+      bgMusic.volume = 0.55;
+      const playPromise = bgMusic.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    }
+
+    document.addEventListener("pointerdown", tryPlayMusic, { once: true });
+    window.addEventListener("load", tryPlayMusic);
+
+    function setSingleText(el, text) {
+      el.innerHTML = "";
+      const p = document.createElement("p");
+      p.textContent = text;
+      el.appendChild(p);
+    }
+
+    function hideYesMessageOnly() {
+      if (yesScale > 1.12) {
+        yesMsg.classList.add("hidden");
+        yesMsg.innerHTML = "";
+      }
+    }
+
+    function ensureNoMessageVisible() {
+      noMsg.classList.remove("hidden");
+    }
+
+    function updateButtonScale() {
+      yesBtn.style.setProperty("--scale", yesScale.toFixed(2));
+      noBtn.style.setProperty("--scale", noScale.toFixed(2));
+    }
+
+    function enterEvasiveMode() {
+      if (evasive) return;
+      evasive = true;
+      noBtn.style.position = "absolute";
+      noBtn.style.margin = "0";
+      moveNoButton();
+      statusText.textContent = "The No button is getting shy now...";
+    }
+
+    function moveNoButton() {
+      if (!evasive) return;
+
+      const pad = 12;
+      const box = noChoice.getBoundingClientRect();
+      const btnW = noBtn.offsetWidth;
+      const btnH = noBtn.offsetHeight;
+
+      const maxX = Math.max(0, box.width - btnW - pad * 2);
+      const maxY = Math.max(0, box.height - btnH - 72);
+
+      const x = pad + Math.random() * maxX;
+      const y = 54 + Math.random() * maxY;
+
+      noBtn.style.left = `${x}px`;
+      noBtn.style.top = `${y}px`;
+    }
+
+    function showFinalScreen() {
+      mainView.classList.add("hidden");
+      finalView.classList.remove("hidden");
+      createSparkles();
+    }
+
+    yesBtn.addEventListener("click", () => {
+      tryPlayMusic();
+
+      if (finalMode) {
+        showFinalScreen();
+        return;
+      }
+
+      yesMsg.classList.remove("hidden");
+      setSingleText(yesMsg, yesTexts[Math.floor(Math.random() * yesTexts.length)]);
+      statusText.textContent = "";
+    });
+
+    noBtn.addEventListener("click", () => {
+      tryPlayMusic();
+
+      ensureNoMessageVisible();
+      setSingleText(noMsg, noTexts[Math.floor(Math.random() * noTexts.length)]);
+
+      yesScale = Math.min(2.8, yesScale + 0.2);
+      noScale = Math.max(0.38, noScale - 0.1);
+      updateButtonScale();
+
+      hideYesMessageOnly();
+
+      if (yesScale >= 2.05 && noScale <= 0.55) {
+        finalMode = true;
+        enterEvasiveMode();
+        statusText.textContent = "Now you could only choose the YES button HEHE 💞";
+      }
+    });
+
+    noBtn.addEventListener("pointerenter", () => {
+      if (evasive) moveNoButton();
+    });
+
+    noBtn.addEventListener("pointerdown", (e) => {
+      if (evasive) {
+        e.preventDefault();
+        moveNoButton();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (evasive) moveNoButton();
+    });
+
+    function createSparkles() {
+      const icons = ["✨", "💖", "🌸", "💫", "💕"];
+      for (let i = 0; i < 18; i++) {
+        const s = document.createElement("span");
+        s.className = "sparkle";
+        s.textContent = icons[Math.floor(Math.random() * icons.length)];
+        s.style.left = `${Math.random() * 100}%`;
+        s.style.animationDuration = `${3.5 + Math.random() * 3.5}s`;
+        s.style.fontSize = `${16 + Math.random() * 18}px`;
+        sparkles.appendChild(s);
+        setTimeout(() => s.remove(), 8000);
+      }
+    }
+
+    updateButtonScale();
+    createSparkles();
+  </script>
+</body>
+</html>
